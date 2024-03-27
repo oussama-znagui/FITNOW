@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('p_p_d_s', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('title');
+            $table->float('weight');
+            $table->float('size');
+            $table->foreignId('user_id')->constrained('users');
+            $table->boolean('status')->default(0);
+            $table->$table->timestamps();
         });
     }
 
