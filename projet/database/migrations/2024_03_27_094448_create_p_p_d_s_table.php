@@ -18,7 +18,7 @@ return new class extends Migration
             $table->float('size');
             $table->foreignId('user_id')->constrained('users');
             $table->boolean('status')->default(0);
-            $table->$table->timestamps();
+            $table->timestamps();
         });
     }
 

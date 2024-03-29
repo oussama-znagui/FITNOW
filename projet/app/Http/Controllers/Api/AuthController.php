@@ -37,7 +37,6 @@ class AuthController extends Controller
             'email'     => $request->email,
             'password'  => Hash::make($request->password)
         ]);
-
         $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json([
             'data'          => $user,
@@ -47,15 +46,27 @@ class AuthController extends Controller
     }
     public function login(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email'     => 'required|string|max:255',
-            'password'  => 'required|string'
+        $loginUserData = $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required'
         ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors());
+        $user = User::where('email', $loginUserData['email'])->first();
+        if (!$user || !Hash::check($loginUserData['password'], $user->password)) {
+            return response()->json([
+                'message' => 'Invalid Credentials'
+            ], 401);
         }
+        $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
+        return response()->json([
+            'access_token' => $token,
+        ]);
     }
     public function logout()
     {
+        auth("sanctum")->user()->tokens()->delete();
+
+        return response()->json([
+            "message" => "logged out"
+        ]);
     }
 }
